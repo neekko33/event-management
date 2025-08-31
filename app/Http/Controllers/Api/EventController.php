@@ -18,6 +18,11 @@ class EventController extends Controller
         'attendees.user'
     ];
 
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum')->except(['index', 'show']);
+    }
+
     public function index()
     {
         $query = $this->loadRelationships(Event::query());
@@ -37,7 +42,7 @@ class EventController extends Controller
                 'start_time' => 'required|date',
                 'end_time' => 'required|date|after_or_equal:start_time',
             ]),
-            'user_id' => 1, // Assuming user_id is 1 for simplicity
+            'user_id' => $request->user()->id, // Assuming user_id is 1 for simplicity
         ]);
 
         return new EventResource($this->loadRelationships($event));
