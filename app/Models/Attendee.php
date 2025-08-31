@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Attendee extends Model
 {
+    protected $fillable = [
+        'user_id',
+    ];
+
     public function event(): BelongsTo
     {
         return $this->belongsTo(Event::class);
