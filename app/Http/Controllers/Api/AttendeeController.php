@@ -56,7 +56,7 @@ class AttendeeController extends Controller
      */
     public function destroy(Event $event, Attendee $attendee)
     {
-        Gate::authorize('delete-attendee', [$event, $attendee]);
+        Gate::authorize('delete', [$event, $attendee]);
         $attendee->delete();
         return response()->noContent();
     }
