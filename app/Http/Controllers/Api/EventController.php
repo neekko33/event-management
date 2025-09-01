@@ -7,6 +7,7 @@ use App\Http\Resources\EventResource;
 use App\Http\Traits\CanLoadRelationships;
 use Illuminate\Http\Request;
 use App\Models\Event;
+use Illuminate\Support\Facades\Gate;
 
 class EventController extends Controller
 {
@@ -61,12 +62,15 @@ class EventController extends Controller
      */
     public function update(Request $request, Event $event)
     {
+        Gate::authorize('update-event', $event);
+
         $event->update($request->validate([
             'name' => 'sometimes|required|string|max:255',
             'description' => 'sometimes|nullable|string',
             'start_time' => 'sometimes|required|date',
             'end_time' => 'sometimes|required|date|after_or_equal:start_time',
         ]));
+
         return new EventResource($this->loadRelationships($event));
     }
 

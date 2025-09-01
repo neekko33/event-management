@@ -8,10 +8,16 @@ use App\Http\Traits\CanLoadRelationships;
 use App\Models\Attendee;
 use App\Models\Event;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class AttendeeController extends Controller
 {
     use CanLoadRelationships;
+
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum')->except(['index', 'show', 'update']);
+    }
 
     private array $relations = [
         'user',
@@ -31,7 +37,7 @@ class AttendeeController extends Controller
     public function store(Request $request, Event $event)
     {
         $attendee = $event->attendees()->create([
-            'user_id' => 1
+            'user_id' => $request->user()->id,
         ]);
 
         return new AttendeeResource($this->loadRelationships($attendee));
@@ -50,6 +56,7 @@ class AttendeeController extends Controller
      */
     public function destroy(Event $event, Attendee $attendee)
     {
+        Gate::authorize('delete-attendee', [$event, $attendee]);
         $attendee->delete();
         return response()->noContent();
     }
